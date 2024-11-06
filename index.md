@@ -1,54 +1,163 @@
 ---
-layout: base
-title: Student Home 
-description: Home Page
-hide: true
+layout: post
+title: Home
+type: issues
+comments: false
 ---
-
-  <title>Table Selection</title>
+<html>
+<head>
   <style>
     body {
       font-family: Arial, sans-serif;
+      margin: 0;
+      background-color: #ffffff;
+    }
+    /* Navigation Bar */
+    .navbar {
+      display: flex;
+      justify-content: center;
+      background-color: #121212;
+      padding: 10px 0;
+      font-size: 18px;
+    }
+    .navbar a {
+      margin: 0 15px;
+      color: #333;
+      text-decoration: none;
+    }
+    /* Period Header */
+    .period-header {
+      background-color: #FFFFFF;
+      color: black;
+      text-align: center;
+      padding: 20px;
+      font-size: 36px;
+      font-weight: bold;
+    }
+    /* Container for Tables */
+    .container {
+      position: relative;
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
-      background-color: #f0f0f0;
-      margin: 0;
+      flex-wrap: wrap;
+      gap: 20px;
+      height: calc(100vh - 150px);
+      padding-top: 20px;
     }
-    .container {
-      position: relative;
-      width: 300px;
-      height: 300px;
-    }
-    .button {
-      position: absolute;
-      width: 60px;
-      padding: 15px;
-      background-color: #FFA500; /* Orange color */
-      color: white;
+    /* Button Styling */
+    .table-button {
+      width: 160px;
+      height: 100px;
+      background-color: #FFFFFF !important; /* Make sure this color is distinct */
       border: none;
       border-radius: 5px;
-      cursor: pointer;
       font-size: 18px;
+      color: black !important; /* Ensure this contrasts with the button background */
       text-align: center;
+      cursor: pointer;
+      position: absolute;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Add shadow for depth */
     }
-    /* Position each button based on the drawing */
-    #button1 { top: 10px; left: 10px; }
-    #button2 { top: 80px; left: 20px; }
-    #button3 { top: 150px; left: 10px; }
-    #button4 { top: 220px; left: 60px; }
-    #button5 { top: 160px; right: 10px; }
-    #button6 { top: 80px; right: 10px; }
+    /* Button Positions */
+    #button1 {top: 68px;left: 170px;}
+    #button2 {top: 180px;left: 170px;}
+    #button3 {top: 300px;left: 170px;}
+    #button4 {top: 420px;left: 357px;}
+    #button5 {top: 300px;right: 182px;}
+    #button6 {top: 187px;right: 182px;}
+    /* Search Bar Styling */
+    .search-container {
+      display: flex;
+      justify-content: center;
+      padding: 20px;
+    }
+    .search-container input[type="text"] {
+      width: 300px;
+      padding: 8px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+    }
+    .search-container button {
+      margin-left: 10px;
+      padding: 8px 12px;
+      font-size: 16px;
+      cursor: pointer;
+      border: none;
+      background-color: #121212;
+      color: white;
+      border-radius: 4px;
+    }
   </style>
 </head>
 <body>
 
-  <div class="container">
-    <button id="button1" class="button" onclick="selectTable(1)">1</button>
-    <button id="button2" class="button" onclick="selectTable(2)">2</button>
-    <button id="button3" class="button" onclick="selectTable(3)">3</button>
-    <button id="button4" class="button" onclick="selectTable(4)">4</button>
-    <button id="button5" class="button" onclick="selectTable(5)">5</button>
-    <button id="button6" class="button" onclick="selectTable(6)">6</button>
+  <!-- Navigation Bar -->
+  <div class="navbar">
+    <a href="#">Period 1</a>
+    <a href="#">Period 3</a>
   </div>
+
+  <!-- Period Header -->
+  <div class="period-header">
+    Period 3
+  </div>
+<!-- Search Bar -->
+  <div class="search-container">
+    <input type="text" id="searchName" placeholder="Enter student name">
+    <button onclick="searchStudent()">Search</button>
+  </div>
+  <!-- Container for Tables -->
+  <div class="container">
+    <button id="button1" class="table-button" onclick="fetchRequest(1)">Table 1</button>
+    <button id="button2" class="table-button" onclick="fetchRequest(2)">Table 2</button>
+    <button id="button3" class="table-button" onclick="fetchRequest(3)">Table 3</button>
+    <button id="button4" class="table-button" onclick="fetchRequest(4)">Table 4</button>
+    <button id="button5" class="table-button" onclick="fetchRequest(5)">Table 5</button>
+    <button id="button6" class="table-button" onclick="fetchRequest(6)">Table 6</button>
+  </div>
+
+  <script>
+    function fetchRequest(tableNumber) {
+      // Redirect to tableDetails.html with the table number in the URL
+      window.location.href = `/student_2025/tabledetails?table=${tableNumber}`;
+    }
+    function searchStudent() {
+      const name = document.getElementById("searchName").value;
+
+      // Define the criteria payload
+      const criteriaDto = {
+        name: name,
+        course: "CSA", // Specify as per your requirement
+        trimester: 1,  // Adjust based on your requirement
+        period: 3      // Adjust based on your requirement
+      };
+      console.log(criteriaDto)
+      // Send the request to the find endpoint
+      fetch("http://localhost:8181/api/students/find", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(criteriaDto)
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        return response.json();
+      })
+      .then(data => {
+        console.log("Student found:", data);
+        alert("Student Found: " + JSON.stringify(data));
+      })
+      .catch(error => {
+        console.error("There was a problem with the fetch operation:", error);
+        alert("Student not found.");
+      });
+    }
+
+  </script>
+</body>
+</html>
