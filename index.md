@@ -124,40 +124,43 @@ comments: false
       window.location.href = `/student_2025/tabledetails?table=${tableNumber}`;
     }
     function searchStudent() {
-      const name = document.getElementById("searchName").value;
+  const name = document.getElementById("searchName").value;
 
-      // Define the criteria payload
-      const criteriaDto = {
-        name: name,
-        course: "CSA", // Specify as per your requirement
-        trimester: 1,  // Adjust based on your requirement
-        period: 3      // Adjust based on your requirement
-      };
-      console.log(criteriaDto)
-      // Send the request to the find endpoint
-      fetch("http://localhost:8181/api/students/find", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(criteriaDto)
-      })
-      .then(response => {
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-        return response.json();
-      })
-      .then(data => {
-        console.log("Student found:", data);
-        alert("Student Found: " + JSON.stringify(data));
-      })
-      .catch(error => {
-        console.error("There was a problem with the fetch operation:", error);
-        alert("Student not found.");
-      });
+  const criteriaDto = {
+    name: name,
+    course: "CSA",
+    trimester: 1,
+    period: 3
+  };
+
+  fetch("http://localhost:8181/api/students/find", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(criteriaDto)
+  })
+  .then(response => {
+    if (!response.ok) {
+      throw new Error("Network response was not ok");
     }
-
+    return response.json();
+  })
+  .then(data => {
+    // Redirect to studentDetails.html with data as query parameters
+    const params = new URLSearchParams({
+      name: data.name,
+      course: data.course,
+      trimester: data.trimester,
+      period: data.period
+    });
+    window.location.href = "/student_2025/student-info?" + params.toString();
+  })
+  .catch(error => {
+    console.error("There was a problem with the fetch operation:", error);
+    alert("Student not found.");
+  });
+}
   </script>
 </body>
 </html>
