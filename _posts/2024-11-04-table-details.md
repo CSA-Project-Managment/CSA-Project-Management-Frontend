@@ -10,11 +10,12 @@ comments: false
         color: white;
     }
     #student-cards-container {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 20px;
-        margin-top: 20px;
-    }
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    margin-top: 20px;
+    justify-content: center; /* Centers the container */
+  }
     .student-card {
         background-color: #fff;
         border: 1px solid #ddd;
@@ -37,17 +38,30 @@ comments: false
     .delete-button {
         margin-top: 10px;
         padding: 8px 12px;
-        background-color: #ff4d4d;
+        background-color: #ff4d4d; /* Red color for delete button */
         color: white;
         border: none;
         border-radius: 4px;
         cursor: pointer;
+    }
+    .create-button {
+        margin: 20px auto;
+        padding: 10px 30px;
+        background-color: #007BFF; /* Blue color */
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        display: block;
+        font-size: 16px;
+        font-weight: bold;
     }
 </style>
 <body>
 
   <h2>Students in Table</h2>
   <div id="student-cards-container"></div>
+  <button class="create-button" onclick="createStudent()">Create Student</button>
 
   <script>
     document.addEventListener("DOMContentLoaded", function() {
@@ -95,7 +109,7 @@ comments: false
     });
 
     function deleteStudent(username) {
-      fetch(`http://localhost:8181/api/students/delete?username=${encodeURIComponent(username)}`, {
+      fetch(`http://127.0.0.1:8181/api/students/delete?username=${encodeURIComponent(username)}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         mode: "cors"
@@ -110,6 +124,43 @@ comments: false
         location.reload();
       })
       .catch(error => console.error("There was a problem with the delete operation:", error));
+    }
+
+    function createStudent() {
+      const name = prompt("Enter student name:");
+      const username = prompt("Enter student username:");
+      const tableNumber = prompt("Enter table number:");
+      const course = "CSA";
+      const trimester = 1;
+      const period = 3;
+      const tasks = []; // Initial empty tasks
+
+      if (name && username && tableNumber) {
+        fetch("http://127.0.0.1:8181/api/students/create", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name: name,
+            username: username,
+            tableNumber: parseInt(tableNumber),
+            course: course,
+            trimester: trimester,
+            period: period,
+            tasks: tasks
+          })
+        })
+        .then(response => {
+          if (!response.ok) throw new Error("Failed to create student");
+          return response.json();
+        })
+        .then(student => {
+          alert("Student created successfully!");
+          location.reload();
+        })
+        .catch(error => console.error("There was a problem with the create operation:", error));
+      } else {
+        alert("Please fill in all fields to create a student.");
+      }
     }
   </script>
 </body>
