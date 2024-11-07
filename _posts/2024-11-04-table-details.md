@@ -67,7 +67,6 @@ comments: false
   }
 </style>
 <body>
-
   <h2>Students in Table</h2>
   <div id="student-cards-container"></div>
   <button class="create-button" onclick="createStudent()">Create Student</button>
@@ -78,7 +77,7 @@ comments: false
       const tableNumber = urlParams.get('table');
 
       if (tableNumber) {
-        fetch("http://127.0.0.1:8181/api/students/find-team", {
+        fetch("http://localhost:8181/api/students/find-team", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -113,6 +112,7 @@ comments: false
                   <p>Trimester: ${student.trimester}</p>
                   <p>Period: ${student.period}</p>
                   <p>Tasks: ${student.tasks.join(", ")}</p>
+                  <button class="add-task-button" onclick="addTask('${student.username}')">Add Task</button>
                   <button class="delete-button" onclick="deleteStudent('${student.username}')">Delete</button>
                 `;
               })
@@ -127,6 +127,7 @@ comments: false
                   <p>Trimester: ${student.trimester}</p>
                   <p>Period: ${student.period}</p>
                   <p>Tasks: ${student.tasks.join(", ")}</p>
+                  <button class="add-task-button" onclick="addTask('${student.username}')">Add Task</button>
                   <button class="delete-button" onclick="deleteStudent('${student.username}')">Delete</button>
                 `;
               });
@@ -139,8 +140,33 @@ comments: false
       }
     });
 
+    function addTask(username) {
+      const newTask = prompt("Enter a new task:");
+      if (newTask) {
+        fetch("http://localhost:8181/api/students/update-tasks", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            username: username,
+            tasks: [newTask]
+          })
+        })
+        .then(response => {
+          if (!response.ok) throw new Error("Failed to add task");
+          return response.json();
+        })
+        .then(student => {
+          alert("Task added successfully!");
+          location.reload();
+        })
+        .catch(error => console.error("There was a problem with the add task operation:", error));
+      } else {
+        alert("Task cannot be empty.");
+      }
+    }
+
     function deleteStudent(username) {
-      fetch(`http://127.0.0.1:8181/api/students/delete?username=${encodeURIComponent(username)}`, {
+      fetch(`http://localhost:8181/api/students/delete?username=${encodeURIComponent(username)}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         mode: "cors"
@@ -167,7 +193,7 @@ comments: false
       const tasks = []; // Initial empty tasks
 
       if (name && username && tableNumber) {
-        fetch("http://127.0.0.1:8181/api/students/create", {
+        fetch("http://localhost:8181/api/students/create", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
