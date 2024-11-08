@@ -150,7 +150,83 @@ comments: false
         document.getElementById("student-cards-container").innerHTML = "<p>No table selected.</p>";
       }
     });
+function addTask(username) {
+      const newTask = prompt("Enter a new task:");
+      if (newTask) {
+        fetch("http://localhost:8181/api/students/update-tasks", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            username: username,
+            tasks: [newTask]
+          })
+        })
+        .then(response => {
+          if (!response.ok) throw new Error("Failed to add task");
+          return response.json();
+        })
+        .then(student => {
+          alert("Task added successfully!");
+          location.reload();
+        })
+        .catch(error => console.error("There was a problem with the add task operation:", error));
+      } else {
+        alert("Task cannot be empty.");
+      }
+    }
+        function createStudent() {
+      const name = prompt("Enter student name:");
+      const username = prompt("Enter student username:");
+      const tableNumber = prompt("Enter table number:");
+      const course = "CSA";
+      const trimester = 1;
+      const period = 3;
+      const tasks = []; // Initial empty tasks
 
-    // Add task, delete student, and create student functions are unchanged.
+      if (name && username && tableNumber) {
+        fetch("http://127.0.0.1:8181/api/students/create", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name: name,
+            username: username,
+            tableNumber: parseInt(tableNumber),
+            course: course,
+            trimester: trimester,
+            period: period,
+            tasks: tasks
+          })
+        })
+        .then(response => {
+          if (!response.ok) throw new Error("Failed to create student");
+          return response.json();
+        })
+        .then(student => {
+          alert("Student created successfully!");
+          location.reload();
+        })
+        .catch(error => console.error("There was a problem with the create operation:", error));
+      } else {
+        alert("Please fill in all fields to create a student.");
+      }
+    }
+
+    function deleteStudent(username) {
+      fetch(`http://127.0.0.1:8181/api/students/delete?username=${encodeURIComponent(username)}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        mode: "cors"
+      })
+      .then(response => {
+        if (!response.ok) throw new Error("Failed to delete student with username: " + username);
+        return response.text();
+      })
+      .then(message => {
+        console.log(message);
+        alert(message);
+        location.reload();
+      })
+      .catch(error => console.error("There was a problem with the delete operation:", error));
+    }
   </script>
 </body>
